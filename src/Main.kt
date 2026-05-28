@@ -57,3 +57,13 @@ class ClaimManager(
         }
     }
 }
+
+class InsuranceProduct(
+    val id: String,
+    val name: String,
+    val basePremium: Double,
+    val minAge: Int = 18,
+    val maxAge: Int = 65
+) {
+    fun isEligible(clientAge: Int): Boolean = clientAge in minAge..maxAge
+}
