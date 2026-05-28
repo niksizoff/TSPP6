@@ -114,6 +114,8 @@ class InsuranceContract(
 
 enum class ClaimState { REGISTERED, APPROVED, REJECTED }
 
+enum class ClaimState { REGISTERED, APPROVED, REJECTED }
+
 class Claim(val id: String, val contract: InsuranceContract, var amount: Double) {
     private var state = ClaimState.REGISTERED
 
@@ -129,4 +131,40 @@ class Claim(val id: String, val contract: InsuranceContract, var amount: Double)
     }
 
     fun getState() = state
+}
+
+fun main() {
+    println("===  Система Офиса Страховой Фирмы ===\n")
+
+    val client = Client("C1", "Иван Петров", "ivan@mail.com", "2024-01-15")
+    val agent = InsuranceAgent("A1", "Анна Сидорова", "anna@ins.com", "Старший агент")
+    val manager = ClaimManager("M1", "Олег Козлов", "oleg@ins.com", "Авто-страхование")
+    val product = InsuranceProduct("P1", "Автострахование", 5000.0)
+
+    client.login()
+    agent.login()
+
+    val contract = InsuranceContract("DOC-101", client, product, "2024-01-01", "2025-01-01")
+    client.contracts.add(contract)
+    println("Договор создан: ${contract.getState()}\n")
+
+    contract.activate()
+    println("После оплаты: ${contract.getState()}\n")
+
+    contract.suspend()
+    println("Просрочка: ${contract.getState()}\n")
+
+    contract.resume()
+    println("Долг погашен: ${contract.getState()}\n")
+
+    val claim = client.registerClaim(contract, 15000.0)
+    manager.processClaim(claim, approve = true)
+    println()
+
+    contract.checkExpiration()
+    println("5️ Итог: ${contract.getState()}\n")
+
+    client.viewContracts()
+    client.logout()
+    agent.logout()
 }
