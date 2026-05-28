@@ -39,3 +39,21 @@ class InsuranceAgent(
         println(" Агент распечатал договор ${contract.id} для клиента ${contract.client.name}")
     }
 }
+
+class ClaimManager(
+    managerId: String,
+    name: String,
+    email: String,
+    val specialization: String
+) : User(managerId, name, email, accessLevel = 3) {
+
+    fun processClaim(claim: Claim, approve: Boolean) {
+        if (approve) {
+            println(" Менеджер $name одобрил выплату по случаю ${claim.id}")
+            claim.approve()
+        } else {
+            println(" Менеджер $name отклонил случай ${claim.id}")
+            claim.reject()
+        }
+    }
+}
