@@ -67,3 +67,47 @@ class InsuranceProduct(
 ) {
     fun isEligible(clientAge: Int): Boolean = clientAge in minAge..maxAge
 }
+
+enum class ContractState { CREATED, ACTIVE, SUSPENDED, TERMINATED, ENDED }
+
+class InsuranceContract(
+    val id: String,
+    val client: Client,
+    val product: InsuranceProduct,
+    val startDate: String,
+    val endDate: String
+) {
+    private var state = ContractState.CREATED
+
+    fun getState() = state
+
+    fun activate() {
+        require(state == ContractState.CREATED) { "⛔ Нельзя активировать: текущее состояние $state" }
+        state = ContractState.ACTIVE
+        println(" [Состояние] Договор $id -> АКТИВНЫЙ (оплата получена)")
+    }
+
+    fun suspend() {
+        require(state == ContractState.ACTIVE) { " Нельзя приостановить: текущее состояние $state" }
+        state = ContractState.SUSPENDED
+        println(" [Состояние] Договор $id -> ПРИОСТАНОВЛЕН (просрочка оплаты)")
+    }
+
+    fun resume() {
+        require(state == ContractState.SUSPENDED) { "⛔ Нельзя возобновить: текущее состояние $state" }
+        state = ContractState.ACTIVE
+        println(" [Состояние] Договор $id -> ВОЗОБНОВЛЁН (долг погашен)")
+    }
+
+    fun terminate() {
+        require(state in listOf(ContractState.ACTIVE, ContractState.SUSPENDED)) { "⛔ Нельзя расторгнуть: текущее состояние $state" }
+        state = ContractState.TERMINATED
+        println(" [Состояние] Договор $id -> РАСТОРГНУТ")
+    }
+
+    fun checkExpiration() {
+        require(state == ContractState.ACTIVE) { "⛔ Проверка срока возможна только для активных договоров" }
+        state = ContractState.ENDED
+        println(" [Состояние] Договор $id -> ЗАВЕРШЁН (истёк срок)")
+    }
+}
