@@ -22,3 +22,20 @@ class Client(
         return Claim("CL-${System.currentTimeMillis()}", contract, amount)
     }
 }
+
+class InsuranceAgent(
+    employeeId: String,
+    name: String,
+    email: String,
+    val position: String
+) : User(employeeId, name, email, accessLevel = 2) {
+
+    fun calculatePremium(product: InsuranceProduct, clientAge: Int): Double {
+        val multiplier = if (clientAge > 30) 1.2 else 1.0
+        return product.basePremium * multiplier
+    }
+
+    fun printContract(contract: InsuranceContract) {
+        println(" Агент распечатал договор ${contract.id} для клиента ${contract.client.name}")
+    }
+}
