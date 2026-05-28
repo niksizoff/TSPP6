@@ -82,7 +82,7 @@ class InsuranceContract(
     fun getState() = state
 
     fun activate() {
-        require(state == ContractState.CREATED) { "⛔ Нельзя активировать: текущее состояние $state" }
+        require(state == ContractState.CREATED) { " Нельзя активировать: текущее состояние $state" }
         state = ContractState.ACTIVE
         println(" [Состояние] Договор $id -> АКТИВНЫЙ (оплата получена)")
     }
@@ -94,20 +94,39 @@ class InsuranceContract(
     }
 
     fun resume() {
-        require(state == ContractState.SUSPENDED) { "⛔ Нельзя возобновить: текущее состояние $state" }
+        require(state == ContractState.SUSPENDED) { " Нельзя возобновить: текущее состояние $state" }
         state = ContractState.ACTIVE
         println(" [Состояние] Договор $id -> ВОЗОБНОВЛЁН (долг погашен)")
     }
 
     fun terminate() {
-        require(state in listOf(ContractState.ACTIVE, ContractState.SUSPENDED)) { "⛔ Нельзя расторгнуть: текущее состояние $state" }
+        require(state in listOf(ContractState.ACTIVE, ContractState.SUSPENDED)) { " Нельзя расторгнуть: текущее состояние $state" }
         state = ContractState.TERMINATED
         println(" [Состояние] Договор $id -> РАСТОРГНУТ")
     }
 
     fun checkExpiration() {
-        require(state == ContractState.ACTIVE) { "⛔ Проверка срока возможна только для активных договоров" }
+        require(state == ContractState.ACTIVE) { " Проверка срока возможна только для активных договоров" }
         state = ContractState.ENDED
         println(" [Состояние] Договор $id -> ЗАВЕРШЁН (истёк срок)")
     }
+}
+
+enum class ClaimState { REGISTERED, APPROVED, REJECTED }
+
+class Claim(val id: String, val contract: InsuranceContract, var amount: Double) {
+    private var state = ClaimState.REGISTERED
+
+    fun approve() {
+        require(contract.getState() == ContractState.ACTIVE) { " Выплата невозможна: договор не активен" }
+        state = ClaimState.APPROVED
+        println(" [Claim] Случай $id одобрен. Выплата: $amount")
+    }
+
+    fun reject() {
+        state = ClaimState.REJECTED
+        println(" [Claim] Случай $id отклонён менеджером")
+    }
+
+    fun getState() = state
 }
